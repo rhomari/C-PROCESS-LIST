@@ -12,12 +12,13 @@ int main(){
         printf("Error: %d\n",GetLastError());
         return 1;
     }
-    
-    
     printf("Process killed\n");
     return 0;
 }   
 BOOL ListProcesses(){
+     HANDLE processhandle;
+     FILETIME creationtime,exittime,kerneltime,usertime;
+     SYSTEMTIME st ={0};
      PROCESSENTRY32 pe;
      HANDLE hprocess=CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
      if (hprocess==INVALID_HANDLE_VALUE){
@@ -30,18 +31,9 @@ BOOL ListProcesses(){
           return FALSE;
      }
     
-   
-    HANDLE processhandle;
-    FILETIME creationtime,exittime,kerneltime,usertime;
-    SYSTEMTIME st ={0};
     printf("%-40s%-15s%-10s\n","Process name","Process ID","Creation time");
      do{
-    
-      
         printf("%-40s%-15d",pe.szExeFile,pe.th32ProcessID);
-       
-        
-           
         processhandle= OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe.th32ProcessID);
         if (processhandle!=INVALID_HANDLE_VALUE){
           if (GetProcessTimes(processhandle,&creationtime,&exittime,&kerneltime,&usertime)){
